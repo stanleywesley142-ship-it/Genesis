@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Genesis</title>
+<link rel="stylesheet" href="style.css">
+<script src="script.js" defer></script>
+</head>
+<body>
+<div id="splash"><div class="logo">🌳</div><h1>Genesis</h1><p>A FRESH BEGINNING</p></div>
+<div id="app">
+  <div class="sidebar" id="sidebar">
+    <button class="new-chat">+ New conversation</button>
+    <div class="today">TODAY</div>
+    <div class="chat-item active"><span class="dot"></span> A fresh beginning<p>No messages yet</p></div>
+    <div class="sidebar-bottom">
+      <div class="warm">☀ Warm mode</div>
+      <p class="warm-text">Your conversation is a quiet place to begin. Nothing needs to be perfectly phrased.</p>
+      <div class="credit">CREATED BY WESLEY JAMES STANLEY</div>
+      <div class="owner">🌳 Owner sign-in</div>
+    </div>
+  </div>
+  <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+  <header>
+    <button class="menu" onclick="toggleMenu()">☰</button>
+    <div class="title"><h2>A fresh beginning ⌄</h2><p><span class="g"></span> Ready when you are</p></div>
+    <button class="refresh" onclick="newConvo()">↻</button> <!-- SWIRL BUTTON
