@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Genesis</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <button class="menu">☰</button>
+  <div class="title">
+    <h2>A fresh beginning ⌄</h2>
+    <p><span class="dot"></span> Ready when you are</p>
+  </div>
+  <button class="refresh" id="refreshBtn">↻</button>
+</header>
+
+<main>
+  <div class="feather-box">🪶</div>
+  <p class="kicker">TAKE YOUR TIME</p>
+  <h1>What would feel<br>good to think<br>through?</h1>
+  <p class="desc">Genesis is here for the half-formed ideas, the careful questions, and the moments that deserve more than a quick answer.</p>
+
+  <div class="cards">
+    <div class="card" id="card1">
+      <h3>Untangle a thought</h3>
+      <p>I have something on my mind and I want to look at it clearly.</p>
+    </div>
+    <div class="card" id="card2">
+      <div class="icon">🕒</div>
+      <h3>Make a small plan</h3>
+      <p>Help me turn a vague intention into one gentle next step.</p>
+    </div>
+    <div class="card" id="card3">
+      <div class="icon">✨</div>
+      <h3>Think out loud</h3>
+      <p>I want to explore an idea without needing to arrive anywhere yet.</p>
+    </div>
+  </div>
+
+  <div id="chat"></div>
+
+  <!-- OWNER SIGN IN BUTTON -->
+  <div class="owner" id="ownerBtn">🌳 Owner sign-in</div>
+</main>
+
+<div class="input-wrap">
+  <div class="input-box">
+    <input id="inp" placeholder="Write what is on your mind...">
+    <button id="sendBtn">↑</button>
+  </div>
+  <p class="warn">GENESIS CAN MAKE MISTAKES · PAUSE AND KEEP WHAT FEELS TRUE</p>
+</div>
+
+<!-- OWNER POPUP MODAL -->
+<div id="ownerModal" class="modal">
+  <div class="modal-content">
+    <span class="close" id="closeModal">&times;</span>
+    <h2>🌳 Owner Sign-In</h2>
+    <p>This is Wesley's admin panel</p>
+    <input type="password" id="ownerPass" placeholder="Enter owner password">
+    <button id="ownerLoginBtn">Sign In</button>
+    <p id="ownerError" style="color:red"></p>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
