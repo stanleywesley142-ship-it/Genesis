@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Genesis</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="splash">
+  <div class="logo-box">
+    <svg viewBox="0 0 100 100"><path d="M50 90 V50 M30 50 H70 M40 30 H60 M35 40 L50 25 L65 40" stroke="white" stroke-width="6" fill="none" stroke-linecap="round"/><circle cx="65" cy="20" r="6" fill="#FBBF24"/></svg>
+  </div>
+  <h1>Genesis</h1>
+  <p>A FRESH BEGINNING</p>
+</div>
+
+<div id="sidebar">
+  <button id="newConvoBtn">+ New conversation</button>
+  <div class="today">TODAY</div>
+  <div class="chat-item active"><span class="dot"></span> A fresh beginning<small>No messages yet</small></div>
+  <div class="sidebar-bottom">
+    <div class="warm">☀ Warm mode <span class="green-dot"></span></div>
+    <p>Your conversation is a quiet place to begin. Nothing needs to be perfectly phrased.</p>
+    <div class="credit">CREATED BY WESLEY JAMES STANLEY</div>
+    <div class="owner" id="ownerBtn">🌳 Owner sign-in</div>
+  </div>
+</div>
+<div id="overlay"></div>
+
+<div id="app">
+  <header>
+    <button class="menu" id="menuBtn">☰</button>
+    <div class="title">
+      <h2>A fresh beginning <span>⌄</span></h2>
+      <p><span class="greendot"></span> Ready when you are</p>
+    </div>
+    <button class="refresh" id="refreshBtn">↻</button>
+  </header>
+
+  <main>
+    <div class="feather-box">
+      <svg viewBox="0 0 24 24"><path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5l6.74-6.76z" stroke="#3D2F1F" stroke-width="1.5" fill="none"/></svg>
+    </div>
+    <p class="kicker">TAKE YOUR TIME</p>
+    <h1>What would feel<br>good to think<br>through?</h1>
+    <p class="desc">Genesis is here for the half-formed ideas, the careful questions, and the moments that deserve more than a quick answer.</p>
+
+    <div class="cards">
+      <div class="card" data-prompt="Untangle a thought"><h3>Untangle a thought</h3><p>I have something on my mind and I want to look at it clearly.</p></div>
+      <div class="card" data-prompt="Make a small plan"><span class="card-icon">🕒</span><h3>Make a small plan</h3><p>Help me turn a vague intention into one gentle next step.</p></div>
+      <div class="card" data-prompt="Think out loud"><span class="card-icon">✨</span><h3>Think out loud</h3><p>I want to explore an idea without needing to arrive anywhere yet.</p></div>
+    </div>
+
+    <div id="chat"></div>
+  </main>
+
+  <div class="input-wrap">
+    <div class="input-box">
+      <input id="inp" placeholder="Write what is on your mind...">
+      <button id="sendBtn">↑</button>
+    </div>
+    <p class="warn">GENESIS CAN MAKE MISTAKES · PAUSE AND KEEP WHAT FEELS TRUE</p>
+  </div>
+</div>
+
+<div id="ownerModal" class="modal">
+  <div class="modal-content">
+    <span class="close" id="closeModal">&times;</span>
+    <h2>🌳 Owner Sign-In</h2>
+    <p>This is Wesley's admin panel</p>
+    <input type="password" id="ownerPass" placeholder="Enter owner password">
+    <button id="ownerLoginBtn">Sign In</button>
+    <p id="ownerError"></p>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
