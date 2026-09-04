@@ -1,0 +1,254 @@
+:root{
+  --bg:#F9F6F1;
+  --card:white;
+  --text:#1B1D23;
+  --muted:#6B7280;
+  --rust:#B45309;
+  --feather:#FEF3C7;
+  --pink:#FCA5A5;
+  --line:#E5E1DB;
+  --green:#10B981;
+}
+
+*{margin:0;padding:0;box-sizing:border-box}
+
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:Georgia,'Times New Roman',serif;
+}
+
+/* HEADER */
+header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:16px 20px;
+  border-bottom:1px solid var(--line);
+  background:var(--bg);
+  position:sticky;
+  top:0;
+  z-index:10;
+}
+
+.menu,.refresh{
+  background:none;
+  border:none;
+  font-size:22px;
+  cursor:pointer;
+  color:#4B5563;
+}
+
+.title{text-align:center}
+.title h2{font-size:18px;font-weight:700}
+.title p{font-size:12px;color:var(--muted)}
+.dot{
+  width:8px;
+  height:8px;
+  background:var(--green);
+  border-radius:50%;
+  display:inline-block;
+  margin-right:6px;
+}
+
+/* MAIN */
+main{
+  padding:32px 20px;
+  max-width:680px;
+  margin:0 auto;
+  padding-bottom:140px;
+}
+
+.feather-box{
+  width:56px;
+  height:56px;
+  background:var(--feather);
+  border-radius:18px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:24px;
+  margin-bottom:16px;
+}
+
+.kicker{
+  color:var(--rust);
+  font-size:11px;
+  letter-spacing:2px;
+  font-weight:700;
+  margin-bottom:12px;
+}
+
+h1{
+  font-size:36px;
+  line-height:1.15;
+  font-weight:700;
+  margin-bottom:16px;
+}
+
+.desc{
+  color:#4B5563;
+  font-size:15px;
+  line-height:1.6;
+  margin-bottom:28px;
+}
+
+/* CARDS */
+.cards{
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+  margin-bottom:20px;
+}
+
+.card{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:18px;
+  cursor:pointer;
+  display:block;
+}
+.card:hover{border-color:#D1C7B8}
+
+.icon{color:var(--rust);margin-bottom:8px;font-size:18px}
+.card h3{font-size:16px;font-weight:700;margin-bottom:6px}
+.card p{color:var(--muted);font-size:14px}
+
+/* CHAT */
+#chat{margin:20px 0}
+
+.user{
+  background:#1A1A1F;
+  color:white;
+  padding:14px 18px;
+  border-radius:18px;
+  margin:10px 0;
+  margin-left:auto;
+  max-width:85%;
+  display:block;
+  line-height:1.5;
+}
+
+.ai{
+  background:var(--card);
+  border:1px solid var(--line);
+  padding:14px 18px;
+  border-radius:18px;
+  margin:10px 0;
+  margin-right:auto;
+  max-width:85%;
+  display:block;
+  line-height:1.6;
+}
+
+/* INPUT */
+.input-wrap{
+  position:fixed;
+  bottom:0;
+  left:0;
+  right:0;
+  background:var(--bg);
+  padding:16px 20px;
+  border-top:1px solid var(--line);
+}
+
+.input-box{
+  display:flex;
+  gap:10px;
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:8px;
+}
+
+input{
+  flex:1;
+  border:none;
+  outline:none;
+  font-size:16px;
+  background:transparent;
+  font-family:inherit;
+}
+
+.input-box button{
+  background:var(--pink);
+  border:none;
+  width:40px;
+  height:40px;
+  border-radius:50%;
+  color:white;
+  font-size:20px;
+  cursor:pointer;
+  font-weight:700;
+}
+
+.warn{
+  text-align:center;
+  font-size:10px;
+  letter-spacing:0.5px;
+  color:#9CA3AF;
+  margin-top:10px;
+}
+
+/* OWNER */
+.owner{
+  cursor:pointer;
+  color:var(--muted);
+  margin-top:20px;
+  font-size:14px;
+}
+.owner:hover{text-decoration:underline}
+
+/* MODAL POPUP */
+.modal{
+  display:none;
+  position:fixed;
+  z-index:100;
+  left:0;
+  top:0;
+  width:100%;
+  height:100%;
+  background:rgba(0,0,0,0.4);
+}
+
+.modal-content{
+  background:var(--bg);
+  margin:15% auto;
+  padding:20px;
+  border:1px solid var(--line);
+  border-radius:12px;
+  width:80%;
+  max-width:400px;
+}
+
+.modal-content h2{margin-bottom:10px;font-size:20px}
+.modal-content p{color:var(--muted);margin-bottom:10px}
+.modal-content input{
+  width:100%;
+  padding:10px;
+  margin:10px 0;
+  border:1px solid #ccc;
+  border-radius:8px;
+  font-family:inherit;
+}
+.modal-content button{
+  background:#1A1A1F;
+  color:white;
+  border:none;
+  padding:10px 20px;
+  border-radius:8px;
+  cursor:pointer;
+  width:100%;
+  font-family:inherit;
+  font-size:15px;
+}
+
+.close{
+  color:#aaa;
+  float:right;
+  font-size:28px;
+  font-weight:bold;
+  cursor:pointer;
+}
+.close:hover{color:#000}
