@@ -1,4 +1,4 @@
-// preview.js -- real Evelyn logic wired into the HUD
+// preview.js - real Evelyn logic wired into the HUD
 const $ = (s) => document.querySelector(s);
 const clock = $('#clock');
 const askInput = $('#askInput');
