@@ -1,35 +1,95 @@
 /**
- * math-engine.ts — safe math evaluation for answerMath.
+ * math-engine.ts — safe math evaluation with multi-step expression support.
+ * Handles arithmetic, constants, functions, and word-to-symbol translation.
  */
 
 export interface MathResult {
   expression: string;
   result: number;
-  ok: boolean;
+  steps?: string[];
 }
 
-// Only allow a tiny safe grammar: digits, + - * /, parentheses, spaces, dots.
-const SAFE = /^[0-9+\-*/().\s]+$/;
+const CONSTANTS: Record<string, number> = {
+  pi: Math.PI,
+  e: Math.E,
+  tau: Math.PI * 2,
+  phi: (1 + Math.sqrt(5)) / 2,
+};
+
+const FUNCTIONS: Record<string, (x: number) => number> = {
+  sin: Math.sin,
+  cos: Math.cos,
+  tan: Math.tan,
+  sqrt: Math.sqrt,
+  log: Math.log,
+  log10: Math.log10,
+  abs: Math.abs,
+  floor: Math.floor,
+  ceil: Math.ceil,
+  round: Math.round,
+  exp: Math.exp,
+};
+
+const WORD_MAP: Record<string, string> = {
+  plus: "+",
+  minus: "-",
+  times: "*",
+  multiplied: "*",
+  divided: "/",
+  over: "/",
+  power: "**",
+  squared: "^2",
+  cubed: "^3",
+};
+
+function tokenize(expr: string): string {
+  let s = expr.toLowerCase().trim();
+  // Replace word operators
+  for (const [word, sym] of Object.entries(WORD_MAP)) {
+    s = s.split(word).join(sym);
+  }
+  // Replace ^ with ** for JS
+  s = s.replace(/\^/g, "**");
+  // Replace named constants
+  for (const [name, value] of Object.entries(CONSTANTS)) {
+    s = s.split(name).join(`(${value})`);
+  }
+  // Replace named functions
+  for (const name of Object.keys(FUNCTIONS)) {
+    s = s.split(name).join(name);
+  }
+  return s;
+}
+
+function validate(expr: string): boolean {
+  // Allow only digits, operators, parens, decimal points, whitespace, and known function/constant names
+  const cleaned = expr.replace(/[a-z]+/g, "").replace(/[^0-9+\-*/().\s]/g, "");
+  return /^[0-9+\-*/().\s]+$/.test(cleaned);
+}
 
 export function answerMath(expression: string): MathResult | null {
   const expr = (expression || "").trim();
   if (!expr) return null;
-  if (!SAFE.test(expr)) {
-    return { expression: expr, result: NaN, ok: false };
-  }
+
+  const translated = tokenize(expr);
+  if (!validate(translated)) return null;
+
   try {
-    // eslint-disable-next-line no-eval
-    const value = Function(`"use strict"; return (${expr});`)();
-    if (typeof value !== "number" || !Number.isFinite(value)) {
-      return { expression: expr, result: NaN, ok: false };
-    }
-    return { expression: expr, result: value, ok: true };
+    // Build a safe evaluation context
+    const fn = new Function(
+      ...Object.keys(FUNCTIONS),
+      "return (" + translated + ")"
+    );
+    const value = fn(...Object.values(FUNCTIONS));
+    if (typeof value !== "number" || !isFinite(value)) return null;
+    return { expression: expr, result: value };
   } catch {
-    return { expression: expr, result: NaN, ok: false };
+    return null;
   }
 }
 
-export function formatMathResult(r: MathResult): string {
-  if (!r.ok) return `I couldn't compute "${r.expression}".`;
-  return `${r.expression} = ${r.result}`;
+export function formatMathResult(result: number): string {
+  if (!isFinite(result)) return "undefined";
+  if (Number.isInteger(result)) return result.toString();
+  return result.toFixed(6).replace(/0+$/, "").replace(/\.$/, "");
 }

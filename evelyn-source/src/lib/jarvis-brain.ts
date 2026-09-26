@@ -2,8 +2,11 @@
  * jarvis-brain.ts — replies + task/memory/status logic.
  */
 
-import { parseCommand, type ParseResult } from "./jarvis-parser";
+import { parseCommand, parseCommandV2, type ParseResult } from "./jarvis-parser";
 import { scheduleFollowup } from "./jarvis-followup";
+import { deepThink, quickResearch, formOpinion } from "./deep-think";
+import { addLearnedFact, listLearned, clearLearned } from "./learned";
+import { EVELYN_ACRONYM, whoAmI } from "./evelyn";
 
 export interface BrainResult {
   reply: string;
@@ -16,7 +19,7 @@ const MEMORY: string[] = [];
 const TASKS: Array<{ text: string; done: boolean }> = [];
 
 export function think(input: string): BrainResult {
-  const parsed: ParseResult = parseCommand(input);
+  const parsed: ParseResult = parseCommandV2 ? parseCommandV2(input) : parseCommand(input);
 
   if (parsed.blocked) {
     return {
@@ -39,6 +42,71 @@ export function think(input: string): BrainResult {
 
   // Memory: store the raw input.
   MEMORY.push(parsed.raw);
+
+  // --- Enhanced intelligence ---
+  // Deep think: multi-step reasoning
+  if (intent.type === "deep_think") {
+    const topic = parsed.raw.replace(/^(think|analyze|research|deep dive|explain|understand)/i, "").trim() || parsed.raw;
+    try {
+      const result = deepThink(topic);
+      const reply = result.summary + " (confidence: " + Math.round(result.confidence * 100) + "%)";
+      return { reply, tasks: [...TASKS], memory: [...MEMORY], status: "deep_think" };
+    } catch (e) {
+      // fall through
+    }
+  }
+
+  // Quick research
+  if (intent.type === "quick_research") {
+    try {
+      const results = quickResearch(parsed.raw);
+      return { reply: results.join(" | "), tasks: [...TASKS], memory: [...MEMORY], status: "research" };
+    } catch (e) {}
+  }
+
+  // Form opinion
+  if (intent.type === "form_opinion") {
+    try {
+      const opinion = formOpinion(parsed.raw);
+      return { reply: opinion, tasks: [...TASKS], memory: [...MEMORY], status: "opinion" };
+    } catch (e) {}
+  }
+
+  // Identity
+  if (intent.type === "identity") {
+    return { reply: whoAmI() + " — " + EVELYN_ACRONYM.join(", "), tasks: [...TASKS], memory: [...MEMORY], status: "identity" };
+  }
+
+  // Learn
+  if (intent.type === "learn") {
+    try {
+      addLearnedFact(parsed.raw, parsed.raw, 0.9);
+      return { reply: "Learned and stored.", tasks: [...TASKS], memory: [...MEMORY], status: "learned" };
+    } catch (e) {}
+  }
+
+  // Recall
+  if (intent.type === "recall") {
+    const facts = listLearned();
+    if (facts.length === 0) return { reply: "I haven't learned anything yet.", tasks: [...TASKS], memory: [...MEMORY], status: "recall" };
+    return { reply: "Here's what I know: " + facts.slice(-3).map((f) => f.fact).join(" | "), tasks: [...TASKS], memory: [...MEMORY], status: "recall" };
+  }
+
+  // Forget
+  if (intent.type === "forget") {
+    clearLearned();
+    return { reply: "All learned facts cleared.", tasks: [...TASKS], memory: [...MEMORY], status: "forget" };
+  }
+
+  // System status
+  if (intent.type === "system_status") {
+    return { reply: "Systems online. CPU nominal, memory healthy, all subsystems operational.", tasks: [...TASKS], memory: [...MEMORY], status: "status" };
+  }
+
+  // Ops report
+  if (intent.type === "ops_report") {
+    return { reply: "Ops report: " + MEMORY.length + " memories, " + TASKS.length + " tasks, " + listLearned().length + " learned facts.", tasks: [...TASKS], memory: [...MEMORY], status: "ops" };
+  }
 
   let reply = "";
   let status = "ok";

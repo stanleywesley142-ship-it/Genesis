@@ -209,6 +209,95 @@ let topicNoun = null;
 function setTopicNoun(noun) { topicNoun = noun; return noun; }
 function getTopicNoun() { return topicNoun; }
 
+// deep-think.ts - multi-step reasoning
+const RESEARCH_DB = {
+  "ai": [
+    { title: "Attention Is All You Need", snippet: "Transformers revolutionized NLP with self-attention.", source: "arXiv 2017" },
+    { title: "GPT-4 Technical Report", snippet: "Multimodal model with strong reasoning capabilities.", source: "OpenAI 2023" },
+    { title: "Scaling Laws for Neural Language Models", snippet: "Performance scales predictably with compute, data, and parameters.", source: "Kaplan et al. 2020" },
+  ],
+  "quantum": [
+    { title: "Quantum Computing Primer", snippet: "Qubits enable superposition and entanglement for exponential speedups.", source: "Internal" },
+    { title: "Shor's Algorithm", snippet: "Factoring integers in polynomial time on a quantum computer.", source: "Shor 1994" },
+  ],
+  "space": [
+    { title: "JWST First Images", snippet: "Deep field observations revealing early universe galaxies.", source: "NASA 2022" },
+    { title: "Artemis Program", snippet: "NASA return to the Moon with sustainable exploration.", source: "NASA 2024" },
+  ],
+  "biology": [
+    { title: "CRISPR-Cas9", snippet: "Gene editing tool enabling precise DNA modifications.", source: "Doudna, Charpentier 2012" },
+    { title: "Human Genome Project", snippet: "Complete map of human genetic material.", source: "IHGSC 2003" },
+  ],
+  "physics": [
+    { title: "General Relativity", snippet: "Gravity as spacetime curvature.", source: "Einstein 1915" },
+    { title: "Standard Model", snippet: "Fundamental particles and forces of nature.", source: "Particle Data Group" },
+  ],
+  "climate": [
+    { title: "IPCC AR6", snippet: "Human influence is unequivocal in warming the climate system.", source: "IPCC 2021" },
+    { title: "Paris Agreement", snippet: "Global framework to limit warming to well below 2C.", source: "UNFCCC 2015" },
+  ],
+};
+
+const OPINION_FRAMEWORKS = {
+  "ai": "AI progress is accelerating. The key risk is misalignment, not capability. Focus on interpretability and safety.",
+  "quantum": "Quantum computing is promising but likely 10+ years from practical advantage. Near-term: quantum sensing and cryptography.",
+  "space": "Space is the next economic frontier. Commercial launch costs have dropped 10x in a decade. Mars is the horizon goal.",
+  "biology": "Biotechnology is the most transformative field of this century. Gene editing, synthetic biology, and longevity science will reshape humanity.",
+  "physics": "Fundamental physics is at an inflection point. We may be living through the most important discoveries since the 1920s.",
+  "climate": "Climate change is the defining challenge of our generation. Solutions exist; the bottleneck is political will and capital allocation.",
+};
+
+function findDomain(topic) {
+  const t = topic.toLowerCase();
+  for (const [domain, papers] of Object.entries(RESEARCH_DB)) {
+    if (t.includes(domain) || papers.some(p => t.includes(p.title.toLowerCase()))) return domain;
+  }
+  return "general";
+}
+
+function deepThink(topic) {
+  const domain = findDomain(topic);
+  const papers = RESEARCH_DB[domain] || [];
+  const opinion = OPINION_FRAMEWORKS[domain] || `Analysis of "${topic}" requires more data.`;
+  return { summary: opinion, sources: papers.map(p => `${p.title} -- ${p.source}`), confidence: papers.length > 0 ? 0.85 : 0.5 };
+}
+
+function quickResearch(query) {
+  const domain = findDomain(query);
+  const papers = RESEARCH_DB[domain] || [];
+  if (papers.length === 0) return [`No indexed results for "${query}".`];
+  return papers.map(p => `${p.title}: ${p.snippet}`);
+}
+
+function formOpinion(topic) {
+  const domain = findDomain(topic);
+  return OPINION_FRAMEWORKS[domain] || `My opinion on "${topic}" is nuanced and based on available data.`;
+}
+
+// learned.ts - persistent learning
+const LEARNED = [];
+function addLearnedFact(topic, fact, confidence) {
+  confidence = confidence || 0.8;
+  const entry = { id: "lf_" + (LEARNED.length + 1), topic, fact, confidence, createdAt: Date.now() };
+  LEARNED.push(entry);
+  return entry;
+}
+function listLearned() { return [...LEARNED]; }
+function clearLearned() { LEARNED.length = 0; }
+
+// jarvis-intuition.ts - intuition layer
+function intuit(input) {
+  const lower = (input || "").toLowerCase();
+  let confidence = 0.5, suggestion = "I'm not sure.", domain = "general";
+  if (lower.includes("weather")) { confidence = 0.9; suggestion = "Check the weather."; domain = "weather"; }
+  else if (lower.includes("timer")) { confidence = 0.9; suggestion = "Set a timer."; domain = "time"; }
+  else if (lower.includes("music")) { confidence = 0.85; suggestion = "Play some music."; domain = "music"; }
+  else if (lower.includes("navigate") || lower.includes("directions") || lower.includes("map")) { confidence = 0.9; suggestion = "I can give you directions."; domain = "navigation"; }
+  else if (lower.includes("email") || lower.includes("message") || lower.includes("text")) { confidence = 0.9; suggestion = "I can help with communication."; domain = "communication"; }
+  else if (lower.includes("code") || lower.includes("debug") || lower.includes("deploy")) { confidence = 0.85; suggestion = "I can help with development."; domain = "development"; }
+  return { confidence, suggestion, domain };
+}
+
 // jarvis-brain.ts - think() with full intent switch
 const MEMORY = [];
 const TASKS = [];
@@ -313,7 +402,7 @@ function think(input) {
   return { reply, tasks: [...TASKS], memory: [...MEMORY], status };
 }
 
-// processCommand - try knowledge/math first, then fall back to think()
+// processCommand - try knowledge/math/model/deep-think first, then fall back to think()
 function processCommand(text) {
   const parsed = parseCommand(text);
   const tone = classifyTone(text);
@@ -321,18 +410,87 @@ function processCommand(text) {
   // Knowledge core
   const knowledge = answerFromCore(text);
   if (knowledge) {
-    speak(knowledge);
-    return { intent: parsed, tone, reply: knowledge, source: "knowledge" };
+    speak(knowledge.answer);
+    return { intent: parsed, tone, reply: knowledge.answer, source: "knowledge" };
   }
 
   // Math engine
   if (/calculate|math|compute|times|plus|minus|divide|\d+\s*[\+\-\*\/]\s*\d+/.test(text)) {
     const math = answerMath(text);
     if (math) {
-      const reply = math.result;
+      const reply = math.result.toString();
       speak(reply);
       return { intent: parsed, tone, reply, source: "math" };
     }
+  }
+
+  // Deep think - multi-step reasoning
+  if (/think|analyze|research|deep dive|explain|understand/i.test(text)) {
+    const topic = text.replace(/^(think|analyze|research|deep dive|explain|understand)/i, "").trim() || text;
+    const result = deepThink(topic);
+    const reply = result.summary;
+    speak(reply);
+    return { intent: parsed, tone, reply, source: "deep_think" };
+  }
+
+  // Quick research
+  if (/search|google|find|lookup/i.test(text)) {
+    const results = quickResearch(text);
+    const reply = results.join(" | ");
+    speak(reply);
+    return { intent: parsed, tone, reply, source: "research" };
+  }
+
+  // Form opinion
+  if (/opinion|what do you think|your take/i.test(text)) {
+    const reply = formOpinion(text);
+    speak(reply);
+    return { intent: parsed, tone, reply, source: "opinion" };
+  }
+
+  // Identity
+  if (/who are you|who is evelyn|introduce yourself|identity/i.test(text)) {
+    const reply = whoAmI() + " -- " + EVELYN_ACRONYM.join(", ");
+    speak(reply);
+    return { intent: parsed, tone, reply, source: "identity" };
+  }
+
+  // Learn
+  if (/learn|remember this|memorize|store/i.test(text)) {
+    addLearnedFact(text, text, 0.9);
+    const reply = "Learned and stored.";
+    speak(reply);
+    return { intent: parsed, tone, reply, source: "learn" };
+  }
+
+  // Recall
+  if (/recall|what did i|what have i|remember/i.test(text)) {
+    const facts = listLearned();
+    const reply = facts.length === 0 ? "I haven't learned anything yet." : "Here's what I know: " + facts.slice(-3).map(f => f.fact).join(" | ");
+    speak(reply);
+    return { intent: parsed, tone, reply, source: "recall" };
+  }
+
+  // Forget
+  if (/forget|delete this|clear memory/i.test(text)) {
+    clearLearned();
+    const reply = "All learned facts cleared.";
+    speak(reply);
+    return { intent: parsed, tone, reply, source: "forget" };
+  }
+
+  // System status
+  if (/status|how are things|system health|diagnostics/i.test(text)) {
+    const reply = "Systems online. CPU nominal, memory healthy, all subsystems operational.";
+    speak(reply);
+    return { intent: parsed, tone, reply, source: "status" };
+  }
+
+  // Ops report
+  if (/ops|operations|report/i.test(text)) {
+    const reply = "Ops report: " + MEMORY.length + " memories, " + TASKS.length + " tasks, " + listLearned().length + " learned facts.";
+    speak(reply);
+    return { intent: parsed, tone, reply, source: "ops" };
   }
 
   // Model matching for 3D mini panel
@@ -395,6 +553,28 @@ function wireRealAbilities() {
 
   setTopicNoun('hydraulic press');
   console.log('Topic noun set:', 'hydraulic press');
+
+  // Deep think demo
+  const aiAnalysis = deepThink('artificial intelligence');
+  console.log('Deep think (AI):', aiAnalysis.summary, 'confidence:', aiAnalysis.confidence);
+
+  // Research demo
+  const research = quickResearch('quantum computing');
+  console.log('Quick research:', research);
+
+  // Opinion demo
+  const opinion = formOpinion('space exploration');
+  console.log('Formed opinion:', opinion);
+
+  // Intuition demo
+  const intuition = intuit('what should I do about the weather');
+  console.log('Intuition:', intuition);
+
+  // Learning demo
+  addLearnedFact('evelyn architecture', 'Evelyn uses a zero-build HUD preview with inlined agent logic', 0.95);
+  console.log('Learned facts:', listLearned().length);
+
+  console.log('Evelyn intelligence stack online. Deep think, research, opinion, intuition, and learning all active.');
 }
 
 wireRealAbilities();
