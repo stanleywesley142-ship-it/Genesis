@@ -1,13 +1,4 @@
-// preview.js — real Evelyn logic wired into the HUD
-import { parseCommand, classifyTone } from './src/lib/jarvis-parser.ts';
-import { think } from './src/lib/jarvis-brain.ts';
-import { answerFromCore } from './src/lib/jarvis-knowledge.ts';
-import { answerMath } from './src/lib/math-engine.ts';
-import { matchModel } from './src/lib/model-generator.ts';
-import { cleanSpeechText } from './src/lib/jarvis-voice.ts';
-import { EVELYN_ACRONYM } from './src/lib/evelyn.ts';
-import { setTopicNoun } from './src/lib/jarvis-followup.ts';
-
+// preview.js -- real Evelyn logic wired into the HUD
 const $ = (s) => document.querySelector(s);
 const clock = $('#clock');
 const askInput = $('#askInput');
@@ -18,30 +9,29 @@ function updateClock() {
   const now = new Date();
   const time = now.toLocaleTimeString('en-US', { hour12: true });
   const date = now.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
-  clock.innerHTML = `<span class="time">${time}</span><span class="date">${date}</span>`;
+  clock.innerHTML = '<span class="time">' + time + '</span><span class="date">' + date + '</span>';
 }
 setInterval(updateClock, 1000);
 updateClock();
 
 function speak(text) {
-  const cleaned = cleanSpeechText(text);
   const synth = window.speechSynthesis;
   if (synth) {
     synth.cancel();
-    const u = new SpeechSynthesisUtterance(cleaned);
+    const u = new SpeechSynthesisUtterance(text);
     u.rate = 0.95;
     synth.speak(u);
   }
 }
 
 function processCommand(text) {
-  const intent = parseCommand(text);
+  const parsed = parseCommand(text);
   const tone = classifyTone(text);
   const result = think(text, [], []);
-  let reply = result.reply || result.action?.reply || '';
+  let reply = result.reply || (result.action && result.action.reply) || '';
   if (!reply) reply = "I'm not sure how to help with that.";
   speak(reply);
-  return { intent, tone, reply };
+  return { intent: parsed, tone, reply };
 }
 
 function handleAsk() {
@@ -76,24 +66,18 @@ micBtn.addEventListener('click', () => {
   setTimeout(() => { listening = false; }, 4000);
 });
 
-// Wire real abilities into HUD panels
 function wireRealAbilities() {
-  // Workshop model
   const m = matchModel('titanic');
-  mini3d.title = `${m.name} — material: ${m.material}`;
+  mini3d.title = m.name + ' -- material: ' + m.material;
 
-  // Knowledge core test
   const paris = answerFromCore('capital of france');
   console.log('Knowledge core:', paris);
 
-  // Math engine
   const math = answerMath('compute 5 times 12');
   console.log('Math engine:', math);
 
-  // Acronym integrity
   console.log('EVELYN_ACRONYM:', EVELYN_ACRONYM, 'len:', EVELYN_ACRONYM.length);
 
-  // Topic memory
   setTopicNoun('hydraulic press');
   console.log('Topic noun set:', 'hydraulic press');
 }

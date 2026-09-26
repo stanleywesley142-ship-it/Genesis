@@ -26,3 +26,15 @@ export function clearFollowup(id: number): void {
   const idx = FOLLOWUPS.findIndex((f) => f.id === id);
   if (idx >= 0) FOLLOWUPS.splice(idx, 1);
 }
+
+// Topic memory: the last noun Evelyn should resolve pronouns against.
+let topicNoun: string | null = null;
+
+export function setTopicNoun(noun: string): string {
+  topicNoun = noun;
+  return topicNoun;
+}
+
+export function getTopicNoun(): string | null {
+  return topicNoun;
+}

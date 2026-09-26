@@ -169,4 +169,25 @@ export function parseCommand(input: string): ParseResult {
   return { intents: intents.filter((i) => i.type !== "unknown"), raw, blocked: false };
 }
 
+// Alias used by the ability-suite: returns a single intent-shaped object.
+export function parseIntent(text: string): ParsedIntent & { kind: string; [k: string]: unknown } {
+  const res = parseCommand(text);
+  const first = res.intents[0];
+  if (!first) {
+    return { kind: "unknown", raw: text, params: {}, confidence: 0 } as ParsedIntent & { kind: string };
+  }
+  return { ...first, kind: first.type } as ParsedIntent & { kind: string };
+}
+
+export type Tone = "warm" | "professional" | "casual" | "formal" | "energetic" | "calm";
+
+export function classifyTone(text: string): Tone {
+  const t = (text || "").toLowerCase();
+  if (/energiz|excit|wow|great/i.test(t)) return "energetic";
+  if (/please|sir|madam|formal/i.test(t)) return "formal";
+  if (/hey|hi|hello|sup/i.test(t)) return "casual";
+  if (/work|report|status|diagnostic|ops|system/i.test(t)) return "professional";
+  return "warm";
+}
+
 export const INTENT_COUNT = INTENT_PATTERNS.length;

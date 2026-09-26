@@ -43,3 +43,8 @@ export function cadenceFor(text: string): number {
   const words = (text || "").split(/\s+/).filter(Boolean).length;
   return Math.max(120, Math.min(200, 120 + words * 2));
 }
+
+// Alias used by the ability-suite / HUD preview.
+export function cleanSpeechText(text: string): string {
+  return cleanVoiceText(text);
+}

@@ -315,3 +315,132 @@ export function clearMemory(): void {
   MEMORY.length = 0;
   TASKS.length = 0;
 }
+
+export interface RouteResult {
+  reply: string;
+  action?: { type: string; [k: string]: unknown };
+}
+
+export function routeIntent(
+  intent: { kind: string; [k: string]: unknown },
+  _tasks: unknown[],
+  _memory: unknown[]
+): RouteResult {
+  const kind = (intent as { kind: string }).kind;
+  const action: RouteResult["action"] = { type: kind };
+
+  switch (kind) {
+    case "triageInbox":
+      action.type = "triageInbox";
+      return { reply: "Triaging your inbox.", action };
+    case "readEmails":
+      action.type = "readEmails";
+      return { reply: "Reading your emails.", action };
+    case "addTask":
+      return { reply: "Task added.", action };
+    case "workshop":
+      return { reply: "Opening workshop.", action };
+    case "workshopModel":
+      return { reply: "Building model.", action };
+    case "workshopSpawn":
+      return { reply: "Spawning shape.", action };
+    case "playFilm":
+      return { reply: "Playing film.", action };
+    case "playArtist":
+      return { reply: "Playing artist.", action };
+    case "playMusic":
+      return { reply: "Playing music.", action };
+    case "tv":
+      return { reply: "Controlling TV.", action };
+    case "tvVolume":
+      return { reply: "Adjusting TV volume.", action };
+    case "houseCommand":
+      return { reply: "Sending house command.", action };
+    case "fleetStatus":
+      return { reply: "Checking fleet status.", action };
+    case "deviceStatus":
+      return { reply: "Checking device status.", action };
+    case "deviceCommand":
+      return { reply: "Sending device command.", action };
+    case "mapOpen":
+      return { reply: "Opening map.", action };
+    case "poiSearch":
+      return { reply: "Searching POI.", action };
+    case "worldGrid":
+      return { reply: "Showing globe.", action };
+    case "weather":
+      return { reply: "Checking weather.", action };
+    case "deepThink":
+      return { reply: "Thinking deeply.", action };
+    case "quickResearch":
+      return { reply: "Researching.", action };
+    case "opinion":
+      return { reply: "Forming opinion.", action };
+    case "skyWatch":
+      return { reply: "Watching the sky.", action };
+    case "fireCheck":
+      return { reply: "Checking fire risk.", action };
+    case "afterHours":
+      return { reply: "After-hours protocol engaged.", action };
+    case "endAfterHours":
+      return { reply: "After-hours protocol ended.", action };
+    case "identity":
+      return { reply: "I am Evelyn.", action };
+    case "system":
+      return { reply: "Here is your status report.", action };
+    case "opsReport":
+      return { reply: "Here is your ops report.", action };
+    case "missedEvents":
+      return { reply: "Here is what you missed.", action };
+    case "cleanSlate":
+      return { reply: "Clean slate protocol engaged.", action };
+    case "listTasks":
+      return { reply: "Here are your tasks.", action };
+    case "completeTask":
+      return { reply: "Task completed.", action };
+    case "deleteTask":
+      return { reply: "Task deleted.", action };
+    case "clearTasks":
+      return { reply: "Cleared completed tasks.", action };
+    case "remember":
+      return { reply: "Remembered.", action };
+    case "recall":
+      return { reply: "Here is what I remember.", action };
+    case "recallLearned":
+      return { reply: "Here is what I have learned.", action };
+    case "forgetLearned":
+      return { reply: "Forgot everything learned.", action };
+    case "playSong":
+      return { reply: "Playing song.", action };
+    case "stopMusic":
+      return { reply: "Stopped music.", action };
+    case "playPlaylist":
+      return { reply: "Playing playlist.", action };
+    case "stopFilm":
+      return { reply: "Stopped film.", action };
+    case "nextEpisode":
+      return { reply: "Next episode.", action };
+    case "localFilm":
+      return { reply: "Playing local film.", action };
+    case "movieRef":
+      return { reply: "Looking up movie reference.", action };
+    case "tvApp":
+      return { reply: "Opening TV app.", action };
+    case "tvMode":
+      return { reply: "Setting TV mode.", action };
+    case "tvState":
+      return { reply: "Here is the TV state.", action };
+    case "houseStatus":
+      return { reply: "Here is the house status.", action };
+    case "repeatThat":
+      return { reply: "Repeating that.", action };
+    case "photoGallery":
+      return { reply: "Showing photos.", action };
+    case "photoGalleryHide":
+      return { reply: "Hiding photos.", action };
+    case "listFiles":
+      return { reply: "Opening vault.", action };
+    default:
+      return { reply: "Done.", action };
+  }
+}
